@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Weather Forecast</title>
+  </head>
+  <body>
+    <h1>Weather Forecast</h1>
+    <form>
+      <input type="text" placeholder="Enter location">
+      <button type="submit">Search</button>
+    </form>
+    <h2>Today's Forecast</h2>
+    <p>High: --°F | Low: --°F</p>
+    <h2>Tomorrow's Forecast</h2>
+    <p>High: --°F | Low: --°F</p>
+    <h2>10-Day Forecast</h2>
+    <ul>
+      <li>Day 1: High: --°F | Low: --°F</li>
+      <li>Day 2: High: --°F | Low: --°F</li>
+      <!-- Add more list items for the remaining days -->
+    </ul>
+
+    <script>
+      // Get the form element
+      const form = document.querySelector('form');
+
+      // Add an event listener to the form to handle form submission
+      form.addEventListener('submit', event => {
+        // Prevent the default form submission behavior
+        event.preventDefault();
+
+        // Get the value of the input field
+        const location = form.querySelector('input').value;
+
+        // Use a weather API to get the weather data for the entered location
+        fetch(`https://api.weatherapi.com/v1/forecast.json?key=4a0c9778bf1b438984e175421230105&q=${location}&days=10`)
+          .then(response => response.json())
+          .then(data => {
+            // Update the page with the weather data
+            const today = data.forecast.forecastday[0];
+            document.querySelector('h2:nth-of-type(1) + p').textContent = `High: ${today.day.maxtemp_f}°F | Low: ${today.day.mintemp_f}°F`;
+
+            const tomorrow = data.forecast.forecastday[1];
+            document.querySelector('h2:nth-of-type(2) + p').textContent = `High: ${tomorrow.day.maxtemp_f}°F | Low: ${tomorrow.day.mintemp_f}°F`;
+
+            const forecastList = document.querySelector('ul');
+            forecastList.innerHTML = '';
+            data.forecast.forecastday.forEach((day, index) => {
+              const listItem = document.createElement('li');
+              listItem.textContent = `Day ${index + 1}: High: ${day.day.maxtemp_f}°F | Low: ${day.day.mintemp_f}°F`;
+              forecastList.appendChild(listItem);
+            });
+          });
+      });
+    </script>
+  </body>
+</html>
